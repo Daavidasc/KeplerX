@@ -1,3 +1,8 @@
+// URL del backend: local en desarrollo, Render en producción (reemplazar tras desplegar)
+const API_URL = ["localhost", "127.0.0.1"].includes(location.hostname)
+    ? "http://127.0.0.1:8000"
+    : "https://keplerx-api.onrender.com";
+
 // Form submission handler
 document.getElementById('exoplanetForm').addEventListener('submit', async function(e) {
     e.preventDefault();
@@ -13,7 +18,7 @@ document.getElementById('exoplanetForm').addEventListener('submit', async functi
 
     try {
         // 3. Enviar al backend FastAPI
-        let response = await fetch("http://127.0.0.1:8000/predict", {
+        let response = await fetch(`${API_URL}/predict`, {
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify(data)
