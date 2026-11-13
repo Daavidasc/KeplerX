@@ -71,20 +71,25 @@ const STEPS = [
     }
 ];
 
-const PRESETS = {
-    jupiter: {
-        sy_pnum: 1, st_rad: 1.1, sy_dist: 150, distpos: 1,
-        pl_orbper: 3.5, pl_orbperlim: 0, orbpos: 0.001, orbneg: -0.001,
-        pl_rade: 13, pl_radj: 1.16, pl_radelim: 0, pl_radjlim: 0, radepos: 0.5, radneg: -0.5, radjpos: 0.05, radpos: 0.5,
-        sy_vmag: 11, sy_kmag: 9.5, sy_gaiamag: 11, vmagpos: 0.02, vmagneg: -0.02, kmagpos: 0.02, kmagneg: -0.02, gaiamagpos: 0, gaiamagneg: 0
-    },
-    supertierra: {
-        sy_pnum: 3, st_rad: 0.7, sy_dist: 40, distpos: 0.2,
-        pl_orbper: 12.4, pl_orbperlim: 0, orbpos: 0.002, orbneg: -0.002,
-        pl_rade: 1.8, pl_radj: 0.16, pl_radelim: 0, pl_radjlim: 0, radepos: 0.1, radneg: -0.1, radjpos: 0.01, radpos: 0.1,
-        sy_vmag: 12.5, sy_kmag: 9.8, sy_gaiamag: 12.2, vmagpos: 0.02, vmagneg: -0.02, kmagpos: 0.02, kmagneg: -0.02, gaiamagpos: 0, gaiamagneg: 0
-    }
+// Valores de ejemplo para probar la herramienta (no son objetos reales)
+const EXAMPLES = {
+    1: { sy_pnum: 2, pl_orbper: 4.83, pl_rade: 1.27, st_rad: 1.67, sy_dist: 1572, sy_vmag: 9.5,  sy_kmag: 8.1,  sy_gaiamag: 15.3 },
+    2: { sy_pnum: 1, pl_orbper: 46.53, pl_rade: 2.05, st_rad: 2.26, sy_dist: 996,  sy_vmag: 16.4, sy_kmag: 12.6, sy_gaiamag: 10.1 },
+    3: { sy_pnum: 4, pl_orbper: 55.02, pl_rade: 1.46, st_rad: 0.52, sy_dist: 615,  sy_vmag: 11.8, sy_kmag: 11.0, sy_gaiamag: 11.1 },
+    4: { sy_pnum: 3, pl_orbper: 146.56, pl_rade: 4.93, st_rad: 0.58, sy_dist: 565, sy_vmag: 16.1, sy_kmag: 13.3, sy_gaiamag: 12.3 }
 };
+// Completa los campos de incertidumbre con valores pequeños y coherentes
+function buildPreset(b) {
+    const r = (n, d) => Number(n.toFixed(d));
+    const radj = r(b.pl_rade / 11.209, 3);
+    return {
+        ...b, pl_radj: radj, pl_orbperlim: 0, pl_radelim: 0, pl_radjlim: 0,
+        orbpos: 0.001, orbneg: -0.001, distpos: 1,
+        radepos: r(b.pl_rade * 0.05, 2), radneg: -r(b.pl_rade * 0.05, 2), radpos: r(b.pl_rade * 0.05, 2), radjpos: r(radj * 0.05, 3),
+        vmagpos: 0.02, vmagneg: -0.02, kmagpos: 0.02, kmagneg: -0.02, gaiamagpos: 0, gaiamagneg: 0
+    };
+}
+const PRESETS = Object.fromEntries(Object.entries(EXAMPLES).map(([k, v]) => [k, buildPreset(v)]));
 
 const VERDICTS = {
     "CONFIRMED": {

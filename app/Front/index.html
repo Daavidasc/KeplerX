@@ -5,10 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>KeplerX - Detector de exoplanetas</title>
   <meta name="description" content="Introduce las mediciones de un candidato y descubre si es un exoplaneta confirmado, un candidato, un falso positivo o un caso refutado.">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <meta name="theme-color" content="#04060c">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="KeplerX - Detector de exoplanetas">
+  <meta property="og:description" content="Introduce las mediciones de un candidato y descubre si es un exoplaneta confirmado, un candidato, un falso positivo o un caso refutado.">
+  <meta property="og:image" content="https://keplerx-production.up.railway.app/og-image.png">
+  <meta property="og:url" content="https://keplerx-production.up.railway.app/">
+  <meta name="twitter:card" content="summary_large_image">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&family=Syncopate:wght@700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=9">
+  <link rel="stylesheet" href="styles.css?v=11">
 </head>
 <body>
   <canvas id="stars" aria-hidden="true"></canvas>
@@ -82,8 +90,10 @@
           <ol id="stepper"></ol>
           <div class="presets">
             <p class="presets-title">¿Quieres probar sin datos propios?</p>
-            <button type="button" class="chip" data-preset="jupiter">Cargar un Júpiter caliente</button>
-            <button type="button" class="chip" data-preset="supertierra">Cargar una super-Tierra</button>
+            <button type="button" class="chip" data-preset="1">Cargar ejemplo 1</button>
+            <button type="button" class="chip" data-preset="2">Cargar ejemplo 2</button>
+            <button type="button" class="chip" data-preset="3">Cargar ejemplo 3</button>
+            <button type="button" class="chip" data-preset="4">Cargar ejemplo 4</button>
           </div>
         </aside>
 
@@ -113,6 +123,6 @@
     <p>KeplerX usa un modelo Gradient Boosting entrenado con datos de la NASA Exoplanet Archive (Kepler, K2 y TESS). Es una herramienta educativa, no un resultado científico oficial.</p>
   </footer>
 
-  <script src="index.js?v=10"></script>
+  <script src="index.js?v=11"></script>
 </body>
 </html>
