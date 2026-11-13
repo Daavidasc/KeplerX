@@ -8,10 +8,10 @@ MODEL_PATH = Path(__file__).resolve().parent.parent / "gradient_boosting_model.p
 # Intentar cargar el modelo al iniciar el servicio
 try:
     model = joblib.load(MODEL_PATH)
-    print("✅ Modelo cargado correctamente")
+    print("[OK] Modelo cargado correctamente")
 except:
     model = None
-    print("⚠️ No se encontró model.pkl, se usará predicción simulada")
+    print("[AVISO] No se encontró el modelo, se usará predicción simulada")
 
 
 def predict_exoplanet(data: dict):

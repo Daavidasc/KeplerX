@@ -1,153 +1,118 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KeplerX Predictor</title>
-  <link rel="stylesheet" href="styles.css">
-  <!-- Font Awesome para íconos -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <title>KeplerX - Detector de exoplanetas</title>
+  <meta name="description" content="Introduce las mediciones de un candidato y descubre si es un exoplaneta confirmado, un candidato, un falso positivo o un caso refutado.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&family=Syncopate:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=9">
 </head>
 <body>
-  <div class="container">
-    <h1><i class="fa-solid fa-star"></i> Exoplanet Detection - KeplerX</h1>
-    <p class="subtitle">Ingrese parámetros para la predicción</p>
+  <canvas id="stars" aria-hidden="true"></canvas>
 
-    <form id="exoplanetForm">
-      <!-- Sección 1: Sistema -->
-      <h2><i class="fa-solid fa-solar-panel"></i> Sistema</h2>
-      <div class="form-grid">
-        <div class="form-group">
-          <label><i class="fa-solid fa-circle"></i> sy_pnum (N° planetas)</label>
-          <input type="number" step="any" name="sy_pnum" required>
-        </div>
-        <div class="form-group">
-          <label><i class="fa-solid fa-circle-dot"></i> st_rad (Radio estrella)</label>
-          <input type="number" step="any" name="st_rad" required>
-        </div>
-        <div class="form-group">
-          <label><i class="fa-solid fa-arrows-left-right-to-line"></i> sy_dist (Distancia [pc])</label>
-          <input type="number" step="any" name="sy_dist" required>
+  <header class="topbar">
+    <a class="brand" href="#inicio" aria-label="KeplerX, inicio">KEPLER<span class="x">X</span></a>
+    <nav aria-label="Principal">
+      <a href="#como-funciona">Cómo funciona</a>
+      <a class="btn btn-small" href="#analizar">Analizar un planeta</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- HÉROE -->
+    <section class="hero" id="inicio">
+      <div class="hero-copy">
+        <h1>¿Es un planeta<br>de verdad?</h1>
+        <p class="lead">Cuando un planeta pasa frente a su estrella, la luz baja un instante. KeplerX estudia esas mediciones y te dice si la señal es un exoplaneta o una falsa alarma.</p>
+        <div class="hero-actions">
+          <a class="btn" href="#analizar">Empezar análisis</a>
+          <a class="link" href="#como-funciona">Ver cómo funciona</a>
         </div>
       </div>
 
-      <!-- Sección 2: Órbita -->
-      <h2><i class="fa-solid fa-rotate"></i> Parámetros orbitales</h2>
-      <div class="form-grid">
-        <div class="form-group">
-          <label><i class="fa-solid fa-clock"></i> pl_orbper (Periodo [días])</label>
-          <input type="number" step="any" name="pl_orbper" required>
-        </div>
-        <div class="form-group">
-          <label><i class="fa-solid fa-circle-question"></i> pl_orbperlim</label>
-          <input type="number" step="any" name="pl_orbperlim" required>
-        </div>
-        <div class="form-group">
-          <label><i class="fa-solid fa-plus-minus"></i> orbpos</label>
-          <input type="number" step="any" name="orbpos" required>
-        </div>
-        
-        <div class="form-group">
-          <label><i class="fa-solid fa-plus-minus"></i> orbneg</label>
-          <input type="number" step="any" name="orbneg" required>
-        </div>
+      <figure class="transit" aria-label="Animación: un planeta pasa por delante de su estrella y el brillo baja un instante">
+        <svg viewBox="0 0 800 440" role="img" aria-hidden="true">
+          <defs>
+            <radialGradient id="starFill" cx="50%" cy="50%" r="50%">
+              <stop offset="0" stop-color="#fff3d6"/>
+              <stop offset="0.65" stop-color="#ffcf7a"/>
+              <stop offset="1" stop-color="#ff9d3d"/>
+            </radialGradient>
+            <radialGradient id="starHalo" cx="50%" cy="50%" r="50%">
+              <stop offset="0" stop-color="#ffb35a" stop-opacity=".28"/>
+              <stop offset="1" stop-color="#ffb35a" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+          <circle cx="400" cy="130" r="130" fill="url(#starHalo)"/>
+          <ellipse cx="400" cy="130" rx="270" ry="30" class="orbit-line"/>
+          <circle id="planetBack" r="14" class="planet"/>
+          <circle cx="400" cy="130" r="56" class="star"/>
+          <circle id="planetFront" r="14" class="planet"/>
+          <path id="curveFull" class="curve-dim" d=""/>
+          <path id="curveTrace" class="curve-live" d=""/>
+          <circle id="marker" r="5" class="marker" cx="40" cy="330"/>
+        </svg>
+        <figcaption id="status">El brillo baja cuando un planeta pasa por delante.</figcaption>
+      </figure>
+    </section>
+
+    <!-- CÓMO FUNCIONA -->
+    <section class="how" id="como-funciona">
+      <h2>Cuatro datos, una respuesta</h2>
+      <ol class="steps-list">
+        <li><h3>Describe el sistema</h3><p>Cuántos planetas tiene la estrella, qué tan grande es y a qué distancia está.</p></li>
+        <li><h3>Indica la órbita</h3><p>Cada cuántos días el planeta da una vuelta completa.</p></li>
+        <li><h3>Mide el planeta</h3><p>Su tamaño comparado con la Tierra y con Júpiter.</p></li>
+        <li><h3>Añade el brillo</h3><p>Qué tan brillante se ve la estrella en distintos instrumentos.</p></li>
+      </ol>
+    </section>
+
+    <!-- ANALIZADOR -->
+    <section class="lab" id="analizar">
+      <div class="lab-head">
+        <h2>Analiza un candidato</h2>
+        <p>Rellena los campos obligatorios. Los datos de incertidumbre son opcionales y valen 0 si los dejas vacíos.</p>
       </div>
 
-      <!-- Sección 3: Radio planetario -->
-      <h2><i class="fa-solid fa-circle-half-stroke"></i> Radio del planeta</h2>
-      <div class="form-grid">
-        <div class="form-group">
-          <label><i class="fa-solid fa-circle"></i> pl_rade (Radio Tierra)</label>
-          <input type="number" step="any" name="pl_rade" required>
-        </div>
-        <div class="form-group">
-          <label><i class="fa-solid fa-circle"></i> pl_radelim</label>
-          <input type="number" step="any" name="pl_radelim" required>
-        </div>
-        <div class="form-group">
-          <label><i class="fa-solid fa-circle"></i> pl_radj (Radio Júpiter)</label>
-          <input type="number" step="any" name="pl_radj" required>
-        </div>
-        <div class="form-group">
-          <label><i class="fa-solid fa-circle"></i> pl_radjlim</label>
-          <input type="number" step="any" name="pl_radjlim" required>
-        </div>
-        <div class="form-group">
-          <label><i class="fa-solid fa-plus-minus"></i> radepos</label>
-          <input type="number" step="any" name="radepos" required>
-        </div>
-        <div class="form-group">
-          <label><i class="fa-solid fa-plus-minus"></i> radjpos</label>
-          <input type="number" step="any" name="radjpos" required>
-        </div>
-        <div class="form-group">
-          <label><i class="fa-solid fa-plus-minus"></i> radpos</label>
-          <input type="number" step="any" name="radpos" required>
-        </div>
-        <div class="form-group">
-          <label><i class="fa-solid fa-plus-minus"></i> radneg</label>
-          <input type="number" step="any" name="radneg" required>
+      <div class="lab-grid">
+        <aside class="stepper" aria-label="Progreso">
+          <ol id="stepper"></ol>
+          <div class="presets">
+            <p class="presets-title">¿Quieres probar sin datos propios?</p>
+            <button type="button" class="chip" data-preset="jupiter">Cargar un Júpiter caliente</button>
+            <button type="button" class="chip" data-preset="supertierra">Cargar una super-Tierra</button>
+          </div>
+        </aside>
+
+        <div class="panel" id="panel">
+          <form id="exoplanetForm" novalidate>
+            <div id="stepBody"></div>
+            <p id="formError" class="form-error" role="alert" hidden></p>
+            <div class="nav-buttons">
+              <button type="button" class="btn btn-ghost" id="backBtn">Atrás</button>
+              <button type="button" class="btn" id="nextBtn">Siguiente</button>
+              <button type="submit" class="btn" id="submitBtn" hidden>Analizar planeta</button>
+            </div>
+          </form>
+
+          <div id="loading" class="loading" hidden aria-live="polite">
+            <div class="spinner" aria-hidden="true"></div>
+            <p>Analizando las mediciones…</p>
+          </div>
+
+          <div id="result" class="result" hidden aria-live="polite"></div>
         </div>
       </div>
+    </section>
+  </main>
 
-      <!-- Sección 4: Fotometría -->
-      <h2><i class="fa-solid fa-eye"></i> Fotometría</h2>
-      <div class="form-grid">
-        <div class="form-group">
-          <label><i class="fa-solid fa-sun"></i> sy_vmag</label>
-          <input type="number" step="any" name="sy_vmag" required>
-        </div>
-        <div class="form-group">
-          <label><i class="fa-solid fa-star"></i> sy_kmag</label>
-          <input type="number" step="any" name="sy_kmag" required>
-        </div>
-        <div class="form-group">
-          <label><i class="fa-solid fa-circle-dot"></i> sy_gaiamag</label>
-          <input type="number" step="any" name="sy_gaiamag" required>
-        </div>
+  <footer class="footer">
+    <p>KeplerX usa un modelo Gradient Boosting entrenado con datos de la NASA Exoplanet Archive (Kepler, K2 y TESS). Es una herramienta educativa, no un resultado científico oficial.</p>
+  </footer>
 
-        <div class="form-group"> 
-            <label><i class="fa-solid fa-location-dot"></i> distpos</label> 
-            <input type="number" step="any" name="distpos" required> 
-        </div>
-
-        <div class="form-group">
-          <label><i class="fa-solid fa-plus-minus"></i> vmagpos</label>
-          <input type="number" step="any" name="vmagpos" required>
-        </div>
-        <div class="form-group">
-          <label><i class="fa-solid fa-plus-minus"></i> vmagneg</label>
-          <input type="number" step="any" name="vmagneg" required>
-        </div>
-        <div class="form-group">
-          <label><i class="fa-solid fa-plus-minus"></i> kmagpos</label>
-          <input type="number" step="any" name="kmagpos" required>
-        </div>
-        <div class="form-group">
-          <label><i class="fa-solid fa-plus-minus"></i> kmagneg</label>
-          <input type="number" step="any" name="kmagneg" required>
-        </div>
-        <div class="form-group">
-          <label><i class="fa-solid fa-plus-minus"></i> gaiamagpos</label>
-          <input type="number" step="any" name="gaiamagpos" required>
-        </div>
-        <div class="form-group">
-          <label><i class="fa-solid fa-plus-minus"></i> gaiamagneg</label>
-          <input type="number" step="any" name="gaiamagneg" required>
-        </div>
-      </div>
-
-      <!-- Botones -->
-      <div class="button-group">
-        <button type="submit" class="btn-submit"><i class="fa-solid fa-rocket"></i> Predecir</button>
-        <button type="button" class="btn-clear" onclick="clearForm()"><i class="fa-solid fa-eraser"></i> Limpiar</button>
-      </div>
-    </form>
-
-    <!-- Resultado -->
-    <div id="result"></div>
-  </div>
-
-  <script src="index.js"></script>
+  <script src="index.js?v=8"></script>
 </body>
 </html>
